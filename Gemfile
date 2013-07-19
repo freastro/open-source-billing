@@ -24,7 +24,7 @@ group :assets do
 end
 
 gem 'active_link_to'
-gem 'jquery-rails'
+gem 'jquery-rails', "2.1.4"
 gem "nested_form"
 gem "kaminari"
 gem "acts_as_archival"
