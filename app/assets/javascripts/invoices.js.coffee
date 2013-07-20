@@ -37,7 +37,7 @@ jQuery ->
     qty = jQuery(container).find("input.qty").val()
     cost = 0 if not cost? or cost is "" or not jQuery.isNumeric(cost)
     qty = 0 if not qty? or qty is "" or not jQuery.isNumeric(qty)
-    line_total = ((parseFloat(cost) * parseFloat(qty))).toFixed(2)
+    line_total = floatToAmount(parseFloat(cost) * parseFloat(qty))
     jQuery(container).find(".line_total").text(line_total)
 
   # Calculate grand total from line totals
@@ -49,28 +49,28 @@ jQuery ->
       line_total = parseFloat(jQuery(this).text())
       total += line_total
       #update invoice sub total lable and hidden field
-      jQuery("#invoice_sub_total, #recurring_profile_sub_total").val(total.toFixed(2))
-      jQuery("#invoice_sub_total_lbl").text(total.toFixed(2))
+      jQuery("#invoice_sub_total, #recurring_profile_sub_total").val(floatToAmount(total))
+      jQuery("#invoice_sub_total_lbl").text(floatToAmount(total))
 
       #update invoice total lable and hidden field
-      jQuery("#invoice_invoice_total, #recurring_profile_invoice_total").val(total.toFixed(2))
-      jQuery("#invoice_total_lbl").text(total.toFixed(2))
+      jQuery("#invoice_invoice_total, #recurring_profile_invoice_total").val(floatToAmount(total))
+      jQuery("#invoice_total_lbl").text(floatToAmount(total))
 
       tax_amount += applyTax(line_total,jQuery(this))
 
     discount_amount = applyDiscount(total)
 
     #update tax amount label and tax amount hidden field
-    jQuery("#invoice_tax_amount_lbl").text(tax_amount.toFixed(2))
-    jQuery("#invoice_tax_amount, #recurring_profile_tax_amount").val(tax_amount.toFixed(2))
+    jQuery("#invoice_tax_amount_lbl").text(floatToAmount(tax_amount))
+    jQuery("#invoice_tax_amount, #recurring_profile_tax_amount").val(floatToAmount(tax_amount))
 
     #update discount amount lable and discount hidden field
-#    jQuery("#invoice_discount_amount_lbl").text(discount_amount.toFixed(2))
-    jQuery("#invoice_discount_amount, #recurring_profile_discount_amount").val((discount_amount * -1).toFixed(2))
+#    jQuery("#invoice_discount_amount_lbl").text(floatToAmount(discount_amount))
+    jQuery("#invoice_discount_amount, #recurring_profile_discount_amount").val(floatToAmount(discount_amount * -1))
 
     total_balance = (parseFloat(jQuery("#invoice_total_lbl").text() - discount_amount) + tax_amount)
-    jQuery("#invoice_invoice_total, #recurring_profile_invoice_total").val(total_balance.toFixed(2))
-    jQuery("#invoice_total_lbl").text(total_balance.toFixed(2))
+    jQuery("#invoice_invoice_total, #recurring_profile_invoice_total").val(floatToAmount(total_balance))
+    jQuery("#invoice_total_lbl").text(floatToAmount(total_balance))
     jQuery("#invoice_total_lbl").formatCurrency()
 
     window.taxByCategory()
@@ -91,6 +91,10 @@ jQuery ->
     discount_type = jQuery("select#discount_type").val()
     discount_percentage = 0 if not discount_percentage? or discount_percentage is ""
     if discount_type == "%" then (subtotal * (parseFloat(discount_percentage) / 100.0)) else discount_percentage
+
+  # Convert a float to an amount
+  floatToAmount = (value) ->
+    (Math.round(value * 100 + 0.01) / 100).toFixed(2)
 
   # Update line and grand total if line item fields are changed
   jQuery("input.cost, input.qty").live "blur", ->
@@ -194,7 +198,7 @@ jQuery ->
     cost = jQuery(container).find("input.cost")
     qty = jQuery(container).find("input.qty")
     cost.val(parseFloat(cost.val()).toFixed(2)) if cost.val()
-    qty.val(parseInt(qty.val())) if qty.val()
+    qty.val(parseFloat(qty.val())) if qty.val()
   updateInvoiceTotal()
 
   # dispute popup validation
